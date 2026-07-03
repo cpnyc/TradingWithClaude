@@ -1,0 +1,6 @@
+schwab-py>=1.4
+httpx>=0.27
+pydantic>=2.7
+pydantic-settings>=2.3
+python-dotenv>=1.0
+mcp>=1.0.0
