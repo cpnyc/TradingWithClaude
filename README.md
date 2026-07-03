@@ -44,9 +44,19 @@ python schwab_auth.py
 python mcp_server_stdio.py
 ```
 
-## Claude Desktop usage
+## Connecting desktop apps to the MCP server
 
-Add a server entry such as:
+The MCP server runs locally and can be exposed to desktop apps that support MCP. Use the same command and arguments for each app.
+
+### 1. Claude Desktop
+
+Add an MCP server entry to Claude Desktop's config file at:
+
+```text
+~/Library/Application Support/Claude/claude_desktop_config.json
+```
+
+Example:
 
 ```json
 {
@@ -59,7 +69,31 @@ Add a server entry such as:
 }
 ```
 
-Claude can then call the `get_schwab_snapshot` tool to retrieve current account and market data from Schwab.
+Then restart Claude Desktop. After that, Claude can call the `get_schwab_snapshot` tool to retrieve current account and market data from Schwab.
+
+### 2. Antigravity Desktop
+
+If you use Antigravity Desktop, open its MCP or integrations settings and add a new server named `trading-with-claude` with the same local command and arguments:
+
+```json
+{
+  "command": "/Users/cpatel/src/Projects/FinTech/TradingWithClaude/.venv/bin/python",
+  "args": ["/Users/cpatel/src/Projects/FinTech/TradingWithClaude/mcp_server_stdio.py"]
+}
+```
+
+If the app expects a full config object, place it under an `mcpServers` section using the same name and settings shown above. Save the config and restart Antigravity Desktop.
+
+### 3. Troubleshooting
+
+- Make sure the virtual environment path is correct.
+- Confirm the server starts successfully with:
+
+```bash
+python mcp_server_stdio.py
+```
+
+- If the app does not detect the server, restart the app after changing its config.
 
 ## Security notes
 
