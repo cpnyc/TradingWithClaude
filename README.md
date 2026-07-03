@@ -44,6 +44,23 @@ python schwab_auth.py
 python mcp_server_stdio.py
 ```
 
+## Getting Schwab credentials from your brokerage account
+
+To use this project, you need a Schwab API app configured in your Schwab developer account.
+
+1. Sign in to the Schwab developer portal at https://developer.schwab.com.
+2. Create or open an API application.
+3. Set the redirect/callback URL to the same value you use in `.env`:
+
+```bash
+SCHWAB_CALLBACK_URL=https://127.0.0.1:8182
+```
+
+4. Copy the generated app key and app secret into your local `.env` file.
+5. If your Schwab account is eligible for API access, complete any required approval steps shown in the developer portal.
+
+If you do not already have a Schwab developer account or your account is not approved for API use, you will need to create one and follow Schwab's onboarding steps before the authentication flow will work.
+
 ## Connecting desktop apps to the MCP server
 
 The MCP server runs locally and can be exposed to desktop apps that support MCP. Use the same command and arguments for each app.
