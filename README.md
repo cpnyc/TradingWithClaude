@@ -45,7 +45,26 @@ Claude Desktop / Antigravity Desktop
 
 ## Step-by-step setup
 
-### 1. Install Python
+### 1. Download this repository to your computer
+
+If you are using Git:
+
+```bash
+git clone https://github.com/cpnyc/TradingWithClaude.git
+cd TradingWithClaude
+```
+
+If you do not use Git, you can download the project as a ZIP file from GitHub, then unzip it and open the folder in a terminal.
+
+### 2. Open the project folder in a terminal
+
+After downloading the repo, open a terminal and go into the project folder:
+
+```bash
+cd TradingWithClaude
+```
+
+### 3. Install Python
 
 If Python is not already installed:
 
