@@ -1,118 +1,226 @@
 # TradingWithClaude
 
-A lightweight Python project for bringing Schwab account and market data into Claude through a local MCP server.
+This project lets you connect your Schwab account data to Claude through a local MCP server. In simple terms, it helps Claude read your account and market information from your own computer.
 
-## Objective
+If you are new to coding, do not worry. The setup below uses plain steps and copy-paste commands.
 
-Fetch account and market data from Schwab in Python, normalize it into a compact snapshot, and expose that snapshot to Claude via an MCP tool.
+## What this project does
 
-## What this repo contains
+This repo contains a small Python app that:
 
-- Schwab OAuth helper: [schwab_auth.py](schwab_auth.py)
-- Schwab client wrapper: [services/schwab/client.py](services/schwab/client.py)
-- Snapshot normalization layer: [services/schwab/data_service.py](services/schwab/data_service.py)
-- MCP server entry point: [mcp_server_stdio.py](mcp_server_stdio.py)
-- Unit tests: [tests/test_schwab_data.py](tests/test_schwab_data.py)
+- connects to Schwab,
+- fetches account and market data,
+- formats that data into a simple snapshot,
+- and exposes it to Claude through a local tool called `get_schwab_snapshot`.
 
-## Setup
+## What you need before you begin
 
-1. Create and activate a virtual environment.
-2. Install dependencies:
+Make sure you have:
+
+- a computer with Python installed,
+- a Schwab brokerage account,
+- a Schwab developer account and API app,
+- Claude Desktop or Antigravity Desktop installed if you want to use it with those apps.
+
+## Architecture (simple data flow)
+
+```text
+Schwab login / token file
+        |
+        v
+Schwab API
+        |
+        v
+Python app
+        |
+        v
+Simple snapshot format
+        |
+        v
+Local MCP server
+        |
+        v
+Claude Desktop / Antigravity Desktop
+```
+
+## Step-by-step setup
+
+### 1. Install Python
+
+If Python is not already installed:
+
+- download Python from https://www.python.org/downloads/
+- install it and make sure to check the option to add Python to your PATH
+
+You can verify it by opening a terminal and running:
+
+```bash
+python --version
+```
+
+If that does not work, try:
+
+```bash
+python3 --version
+```
+
+### 2. Open the project folder
+
+In your terminal, go to the folder where you cloned or downloaded this repository.
+
+Example:
+
+```bash
+cd /path/to/TradingWithClaude
+```
+
+### 3. Create a virtual environment
+
+A virtual environment keeps this project isolated from other Python projects.
+
+```bash
+python -m venv .venv
+```
+
+Then activate it.
+
+On macOS or Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+On Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### 4. Install the required Python packages
+
+Run:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Configure your Schwab credentials in a local `.env` file:
+### 5. Create your local environment file
+
+Create a file named `.env` in the project folder. You can copy the example file first:
 
 ```bash
-SCHWAB_APP_KEY=...
-SCHWAB_APP_SECRET=...
+cp .env.example .env
+```
+
+Then open `.env` in a text editor and fill in your values.
+
+Example:
+
+```bash
+SCHWAB_APP_KEY=your_app_key_here
+SCHWAB_APP_SECRET=your_app_secret_here
 SCHWAB_CALLBACK_URL=https://127.0.0.1:8182
 SCHWAB_TOKEN_PATH=data/schwab_token.json
 ```
 
-4. Authenticate once:
+### 6. Get your Schwab credentials
+
+To use this project, you need a Schwab API app.
+
+1. Sign in to the Schwab developer portal at https://developer.schwab.com.
+2. Create or open an API application.
+3. Set the redirect URL to the same value you used in `.env`:
+
+```bash
+SCHWAB_CALLBACK_URL=https://127.0.0.1:8182
+```
+
+4. Copy the generated app key and app secret into your `.env` file.
+5. Complete any approval or onboarding steps required by Schwab.
+
+If your account is not approved for API access, the authentication flow will not work until that is completed.
+
+### 7. Authenticate once with Schwab
+
+Run:
 
 ```bash
 python schwab_auth.py
 ```
 
-5. Start the MCP server:
+This starts the one-time login flow and creates a token file at the path you set in `.env`.
+
+### 8. Start the local MCP server
+
+Run:
 
 ```bash
 python mcp_server_stdio.py
 ```
 
-## Getting Schwab credentials from your brokerage account
+If it starts successfully, the server is ready to be used by a desktop app.
 
-To use this project, you need a Schwab API app configured in your Schwab developer account.
+## Connect it to desktop apps
 
-1. Sign in to the Schwab developer portal at https://developer.schwab.com.
-2. Create or open an API application.
-3. Set the redirect/callback URL to the same value you use in `.env`:
+The MCP server runs locally on your computer. You can connect it to apps that support MCP.
 
-```bash
-SCHWAB_CALLBACK_URL=https://127.0.0.1:8182
-```
+### Claude Desktop
 
-4. Copy the generated app key and app secret into your local `.env` file.
-5. If your Schwab account is eligible for API access, complete any required approval steps shown in the developer portal.
-
-If you do not already have a Schwab developer account or your account is not approved for API use, you will need to create one and follow Schwab's onboarding steps before the authentication flow will work.
-
-## Connecting desktop apps to the MCP server
-
-The MCP server runs locally and can be exposed to desktop apps that support MCP. Use the same command and arguments for each app.
-
-### 1. Claude Desktop
-
-Add an MCP server entry to Claude Desktop's config file at:
+Open the config file for Claude Desktop:
 
 ```text
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
-Example:
+Add a server entry like this:
 
 ```json
 {
   "mcpServers": {
     "trading-with-claude": {
-      "command": "/Users/cpatel/src/Projects/FinTech/TradingWithClaude/.venv/bin/python",
-      "args": ["/Users/cpatel/src/Projects/FinTech/TradingWithClaude/mcp_server_stdio.py"]
+      "command": "/absolute/path/to/your/project/.venv/bin/python",
+      "args": ["/absolute/path/to/your/project/mcp_server_stdio.py"]
     }
   }
 }
 ```
 
-Then restart Claude Desktop. After that, Claude can call the `get_schwab_snapshot` tool to retrieve current account and market data from Schwab.
+Replace the paths with the actual location of your project on your computer.
 
-### 2. Antigravity Desktop
+Then restart Claude Desktop.
 
-If you use Antigravity Desktop, open its MCP or integrations settings and add a new server named `trading-with-claude` with the same local command and arguments:
+### Antigravity Desktop
+
+Open the MCP or integrations settings in Antigravity Desktop and add a server named `trading-with-claude` with the same command and arguments.
+
+Example:
 
 ```json
 {
-  "command": "/Users/cpatel/src/Projects/FinTech/TradingWithClaude/.venv/bin/python",
-  "args": ["/Users/cpatel/src/Projects/FinTech/TradingWithClaude/mcp_server_stdio.py"]
+  "command": "/absolute/path/to/your/project/.venv/bin/python",
+  "args": ["/absolute/path/to/your/project/mcp_server_stdio.py"]
 }
 ```
 
-If the app expects a full config object, place it under an `mcpServers` section using the same name and settings shown above. Save the config and restart Antigravity Desktop.
+Save the settings and restart the app.
 
-### 3. Troubleshooting
+## Troubleshooting
 
-- Make sure the virtual environment path is correct.
-- Confirm the server starts successfully with:
+If something does not work, try these checks:
+
+- Make sure Python is installed.
+- Make sure the virtual environment is activated.
+- Make sure `.env` contains the correct Schwab values.
+- Make sure the server starts with:
 
 ```bash
 python mcp_server_stdio.py
 ```
 
-- If the app does not detect the server, restart the app after changing its config.
+- If the desktop app does not see the server, restart the app after changing its config.
 
 ## Security notes
 
 - Keep your Schwab credentials and token file local.
-- Do not commit the token file or `.env`.
+- Do not commit your `.env` file or token file to Git.
+- If you are unsure about a setting, keep the default values unless you know they should be changed.
