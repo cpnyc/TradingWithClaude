@@ -238,6 +238,10 @@ python mcp_server_stdio.py
 
 - If the desktop app does not see the server, restart the app after changing its config.
 
+## License
+
+This project is licensed under the MIT License. Copyright (c) 2026 Atrii, LLC.
+
 ## Security notes
 
 - Keep your Schwab credentials and token file local.
