@@ -227,6 +227,10 @@ Save the settings and restart the app.
 
 If something does not work, try these checks:
 
+- Market quotes usually work once the token is refreshed successfully.
+- Account-level data may still fail with a 401 Unauthorized response if your Schwab app or account does not have the required permissions for account endpoints.
+- If account data is important to you, confirm that your Schwab developer app and account access are approved for the account APIs before expecting that part to work.
+
 - Make sure Python is installed.
 - Make sure the virtual environment is activated.
 - Make sure `.env` contains the correct Schwab values.

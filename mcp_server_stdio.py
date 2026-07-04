@@ -30,7 +30,7 @@ async def fetch_schwab_snapshot(symbols: list[str] | None = None) -> dict[str, A
 
     account_payload = {}
     try:
-        raw_accounts = client.get_accounts(fields=["positions", "balances"])
+        raw_accounts = client.get_accounts()
         account_payload = raw_accounts.json() if hasattr(raw_accounts, "json") else raw_accounts
     except Exception as exc:
         log.warning("Unable to fetch Schwab accounts: %s", exc)
